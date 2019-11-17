@@ -1,7 +1,8 @@
 .vscode
 __pycache__
 venv
-
+rough.py
+README.md
 # OS generated files #
 ######################
 .DS_Store
