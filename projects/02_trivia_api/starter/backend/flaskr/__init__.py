@@ -146,13 +146,15 @@ def create_app(test_config=None):
 
             # question search
             if search_term is not None:
-                search = "%{}%".format(search_term.lower())
+                search = "{}".format(search_term.lower())
+
                 search_results = Question.query.filter(
-                    Question.question.ilike(search)).all()
+                    Question.question.ilike('%' + search + '%')).all()
+
                 formatted_search_results = [
                     question.format for question in search_results]
                 paginated_results = paginate_questions(
-                    request, formatted_search_results)
+                    request, search_results)
 
                 return jsonify({
                     'success': True,
@@ -161,28 +163,28 @@ def create_app(test_config=None):
                 })
             # question add
             else:
-              question = body.get('question', None)
-              answer = body.get('answer', None)
-              category = body.get('category', None)
-              difficulty = body.get('difficulty', None)
+                question = body.get('question', None)
+                answer = body.get('answer', None)
+                category = body.get('category', None)
+                difficulty = body.get('difficulty', None)
 
-              if question is None or answer is None or category is None or difficulty is None:
-                  abort(422)
+                if question is None or answer is None or category is None or difficulty is None:
+                    abort(422)
 
-              new_question = Question(
-                  question=question, answer=answer, category=category,
-                  difficulty=difficulty)
-              new_question.insert()
+                new_question = Question(
+                    question=question, answer=answer, category=category,
+                    difficulty=difficulty)
+                new_question.insert()
 
-              selection = Question.query.order_by('id').all()
-              paged_questions = paginate_questions(request, selection)
+                selection = Question.query.order_by('id').all()
+                paged_questions = paginate_questions(request, selection)
 
-              return jsonify({
-                  'success': True,
-                  'created': new_question.id,
-                  'questions': paged_questions,
-                  'total_questions': len(selection)
-              }), 201
+                return jsonify({
+                    'success': True,
+                    'created': new_question.id,
+                    'questions': paged_questions,
+                    'total_questions': len(selection)
+                }), 201
 
         except():
             abort(422)
@@ -221,15 +223,15 @@ def create_app(test_config=None):
             })
         except():
             abort(500)
-            
 
     @app.route('/categories/<int:category_id>/questions', methods=['GET'])
     def get_questions_by_category(category_id):
         try:
-            questions = Question.query.filter(Question.category == str(category_id)).all()
+            questions = Question.query.filter(
+                Question.category == str(category_id)).all()
 
             category = Category.query.get(str(category_id))
-            
+
             get_all_cat = Category.query.order_by('id').all()
             formatted_cat = [item.format for item in get_all_cat]
 
@@ -254,8 +256,7 @@ def create_app(test_config=None):
 
         except():
             abort(500)
-            
-            
+
     '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
@@ -339,9 +340,13 @@ def create_app(test_config=None):
 
     return app
 
-
     #  Default port:
 if __name__ == '__main__':
     app = create_app()
     app.debug = True
     app.run()
+
+
+# API Documentation Link
+# URL
+# https://documenter.getpostman.com/view/6380213/SW7c3Ten
