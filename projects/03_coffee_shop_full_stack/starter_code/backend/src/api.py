@@ -1,4 +1,5 @@
 import os
+import sys
 from flask import Flask, request, jsonify, abort
 from sqlalchemy import exc
 import json
@@ -6,6 +7,7 @@ from flask_cors import CORS
 
 from .database.models import db_drop_and_create_all, setup_db, Drink
 from .auth.auth import AuthError, requires_auth
+
 
 app = Flask(__name__)
 setup_db(app)
@@ -18,6 +20,11 @@ CORS(app)
 '''
 # db_drop_and_create_all()
 
+
+
+@app.route('/hello')
+def get_drinks():
+    return print('hellllloooo')
 ## ROUTES
 '''
 @TODO implement endpoint
@@ -27,7 +34,8 @@ CORS(app)
     returns status code 200 and json {"success": True, "drinks": drinks} where drinks is the list of drinks
         or appropriate status code indicating reason for failure
 '''
-
+# @app.route('/drinks')
+# def get_drinks():
 
 '''
 @TODO implement endpoint
